@@ -39,30 +39,90 @@ function handleDisconnect(connection) {
 }
 
 function listPlaces(callback) {
-		con.query('SELECT * FROM places',function(err,rows){
-                  if(err) throw err;
-                var list = '```';
-                for (var i = 0; i < rows.length; i++) {
-                        list += rows[i].name + '\n';
-                }
+	con.query('SELECT id, name FROM places',function(err,rows){
+    if(err) throw err;
+      var list = '```';
+      for (var i = 0; i < rows.length; i++) {
+       list += rows[i].id + ': ' + rows[i].name + '\n';
+     }
 
-                list += '```';
-
-		callback(list);
-                });
+    list += '```';
+	  callback(list);
+  });
 }
 
 function addPlace(place, callback) {
 	con.query('INSERT INTO places (name) VALUES (?)', place, function(err,res) {
-  if(err) throw err;
-	callback(res);
-});
+    if(err) throw err;
+    callback(res);
+  });
+}
+
+function removePlace(placeId, callback) {
+  if (isNaN(placeId)) {
+    callback("must provide a valid place id");
+    return;
+  }
+
+  findPlaceById(placeId, function(place) {
+    if (place == null || place == '') {
+      return;
+    }
+    con.query('delete from places where id = ?', placeId, function(err,res)) {
+      if(err) throw err;
+      if (result.affectedRows > 0) {
+        callback("deleted: " + place);
+      }
+    }
+  });
+}
+
+function findPlaceById(placeId, callback) {
+    con.query('SELECT id, name FROM places where id = ?', placeId, function(err,rows){
+    if(err) throw err;
+
+    if (rows.length == 0) || rows.length > 1) {
+      return;
+    }
+
+    callback(rows[0].name);
+  });
+}
+
+function randomLunch() {
+  con.query('select id, name from places order by RAND() limit 1', function(err,rows) {
+    if(err) throw err;
+
+    if (rows.length == 0) {
+      return;
+    }
+
+    var result = 'go to ' + rows[0].id + ': ' + rows[0].name;
+
+    callback(result);
+  });
 }
 
 function send(channel, response) {
-if (response != null && response != '') {
-    channel.send(response);
+  if (response != null && response != '') {
+      channel.send(response);
+  }
 }
+
+function concatSubArray(array, delim, from, to) {
+  var val = '';
+  for (var i = from; i < to; i++) {
+    if (array[i] != null && array[i] != '') {
+      if (i > from) {
+        val += delim;
+      }
+      val += array[i];
+    }
+    else {
+      break;
+    }
+  }
+  return val
 }
 
 
@@ -93,50 +153,53 @@ slack.on('message', function(message) {
   channelName = (channel != null ? channel.is_channel : void 0) ? '#' : '';
   channelName = channelName + (channel ? channel.name : 'UNKNOWN_CHANNEL');
 
-if (channelName != "what-is-lunch" && channelName != "#test-lunch-bot") {
-	return;
-}
-
+  if (channelName != "what-is-lunch" && channelName != "#test-lunch-bot") {
+  	return;
+  }
 
   userName = (user != null ? user.name : void 0) != null ? "@" + user.name : "UNKNOWN_USER";
   
-if (type === 'message' && (text != null) && (channel != null)) {
+  if (type === 'message' && (text != null) && (channel != null)) {
 
+    ////////////// CHANNEL TEXT HANDLING CODE //////////////////
     split = text.split(' ');
-var category = split[0];
-var cmd = split[1];
-var parm1 = split[2];
+    var category = split[0];
+    var cmd = split[1];
+    var parm1 = split[2];
 
-if (category == "?admin") {
-	if (userName != "@john.wright") {
-		send(channel, "you can't control me " + userName + "!");
-		return;
-	}
-	if (cmd == "add") {
-		var place = '';
-		for (var i = 2; i < 10; i++) {
-			if (split[i] != null && split[i] != '') {
-				if (i > 2) {
-					place += ' ';
-				}
-                        	place += split[i]
-			}
-                }
-		addPlace(place, function(result) {
-			send(channel, "Added: " + place);
-		});
-	}
-} 
-else if (category == "?lunch") {
-	if (cmd == "list") {
-		listPlaces(function(result) {
-			send(channel, result);
-		})
-	}
-}
+    if (category == "?admin") {
+    	if (userName != "@john.wright") {
+    		send(channel, "you can't control me " + userName + "!");
+    	}
+    	if (cmd == "add") {
+        var place = concatSubArray(split, ' ', 2, 10);
 
+    		addPlace(place, function(result) {
+    			send(channel, "Added: " + place);
+    		});
+    	}
+      else if (cmd == "remove") {
+        removePlace(parm1, function (result) {
+          send(channel, result);
+        })
+      }
+    } 
+    else if (category == "?lunch") {
+      if (cmd == null || cmd == '') {
+        randomLunch(function(result) {
+          send(channel, result);
+        });
+      }
+    	if (cmd == "list") {
+    		listPlaces(function(result) {
+    			send(channel, result);
+    		})
+    	}
+    }
 
-  } else {
+  ////////////// SLACK CODE BELOW /////////////////
+  }
+  else {
     typeError = type !== 'message' ? "unexpected type " + type + "." : null;
     textError = text == null ? 'text was undefined.' : null;
     channelError = channel == null ? 'channel was undefined.' : null;
@@ -145,7 +208,6 @@ else if (category == "?lunch") {
     }).join(' ');
     return console.log("@" + slack.self.name + " could not respond. " + errors);
   }
-
 });
 
 slack.on('error', function(error) {
