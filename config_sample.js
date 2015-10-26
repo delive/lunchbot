@@ -2,6 +2,8 @@ var config = {};
 
 config.mysql = {};
 
+config.admins = ["userid", "userid2"];
+
 config.mysql.host = "localhost";
 config.mysql.user = "username";
 config.mysql.password = "pw";

@@ -109,6 +109,14 @@ function send(channel, response) {
   }
 }
 
+function isAdmin(user) {
+  //expected username without @
+  if (config.admins.indexOf(user) > 0) {
+    return true;
+  }
+  return false;
+}
+
 function concatSubArray(array, delim, from, to) {
   var val = '';
   for (var i = from; i < to; i++) {
@@ -168,8 +176,9 @@ slack.on('message', function(message) {
     var parm1 = split[2];
 
     if (category == "?admin") {
-    	if (userName != "@john.wright") {
+    	if (!isAdmin(user)) {
     		send(channel, "you can't control me " + userName + "!");
+        return;
     	}
     	if (cmd == "add") {
         var place = concatSubArray(split, ' ', 2, 10);
