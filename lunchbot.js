@@ -110,8 +110,8 @@ function send(channel, response) {
 }
 
 function isAdmin(user) {
-  //expected username without @
-  if (config.admins.indexOf(user) > 0) {
+  //expected username with @
+  if (config.admins.indexOf(user) >= 0) {
     return true;
   }
   return false;
@@ -176,7 +176,7 @@ slack.on('message', function(message) {
     var parm1 = split[2];
 
     if (category == "?admin") {
-    	if (!isAdmin(user)) {
+    	if (!isAdmin(userName)) {
     		send(channel, "you can't control me " + userName + "!");
         return;
     	}
