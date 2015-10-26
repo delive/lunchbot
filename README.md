@@ -1,5 +1,7 @@
 # lunchbot
 
+this is a simple slack lunch bot
+
 to get started you'll need to do some of the following:
 
 1) install node.js and npm (node package manager). i think i used yum (sudo yum install nodejs npm)
