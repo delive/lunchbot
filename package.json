@@ -1,0 +1,12 @@
+{
+  "name": "lunchbot",
+  "version": "1.0.0",
+  "description": "slack lunch bot",
+  "main": "lunchbot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "john.wright",
+  "url": "https://github.com/delive/lunchbot"
+  "license": "ISC"
+}

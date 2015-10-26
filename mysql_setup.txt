@@ -1,0 +1,12 @@
+CREATE TABLE `places` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8
+
+
+CREATE TABLE `visits` (
+  `place` int(5) NOT NULL,
+  `date` datetime NOT NULL,
+  PRIMARY KEY (`place`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
