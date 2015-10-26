@@ -197,11 +197,14 @@ slack.on('message', function(message) {
     	}
     }
     else if (category == "?help") {
-      var helpText = "commands:\n 
-      ```?help : for help!\n
-      ?lunch : random lunch suggestion\n
-      ?lunch list : list all lunch places\n
-      ?admin add {place} : add a lunch location";
+      var helpText = "commands:\n" +
+      "```" +
+      "?help : for help!\n" +
+      "?lunch : random lunch suggestion\n" +
+      "?lunch list : list all lunch places\n" +
+      "?admin add {place} : add a lunch location\n" +
+      "?admin remove {placeId} : remove a lunch location" +
+      "```";
       send(channel, helpText);
     }
 
