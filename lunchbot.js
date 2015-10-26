@@ -190,11 +190,19 @@ slack.on('message', function(message) {
           send(channel, result);
         });
       }
-    	if (cmd == "list") {
+    	else if (cmd == "list") {
     		listPlaces(function(result) {
     			send(channel, result);
     		})
     	}
+    }
+    else if (category == "?help") {
+      var helpText = "commands:\n 
+      ```?help : for help!\n
+      ?lunch : random lunch suggestion\n
+      ?lunch list : list all lunch places\n
+      ?admin add {place} : add a lunch location";
+      send(channel, helpText);
     }
 
   ////////////// SLACK CODE BELOW /////////////////
