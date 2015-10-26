@@ -68,12 +68,12 @@ function removePlace(placeId, callback) {
     if (place == null || place == '') {
       return;
     }
-    con.query('delete from places where id = ?', placeId, function(err,res)) {
+    con.query('delete from places where id = ?', placeId, function(err,res) {
       if(err) throw err;
-      if (result.affectedRows > 0) {
+      if (res.affectedRows > 0) {
         callback("deleted: " + place);
       }
-    }
+    });
   });
 }
 
@@ -81,7 +81,7 @@ function findPlaceById(placeId, callback) {
     con.query('SELECT id, name FROM places where id = ?', placeId, function(err,rows){
     if(err) throw err;
 
-    if (rows.length == 0) || rows.length > 1) {
+    if (rows.length == 0 || rows.length > 1) {
       return;
     }
 
@@ -89,7 +89,7 @@ function findPlaceById(placeId, callback) {
   });
 }
 
-function randomLunch() {
+function randomLunch(callback) {
   con.query('select id, name from places order by RAND() limit 1', function(err,rows) {
     if(err) throw err;
 
@@ -181,7 +181,7 @@ slack.on('message', function(message) {
       else if (cmd == "remove") {
         removePlace(parm1, function (result) {
           send(channel, result);
-        })
+        });
       }
     } 
     else if (category == "?lunch") {
