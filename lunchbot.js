@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var config = require("../config.js");
+var schedule = require('node-schedule');
 var con;
 
 // function connectMysql() {
@@ -158,6 +159,13 @@ autoReconnect = true;
 autoMark = true;
 
 slack = new Slack(token, autoReconnect, autoMark);
+
+var j = schedule.scheduleJob('0 * * * *', function(){
+	var timeLeft = 31 - new Date().getDate();
+  	slack.send(	text: 'only  ' + timeLeft + ' days until tesla preorder!',
+	channel: 'what-is-lunch',
+	username: 'lunchbot'
+});
 
 // con = connectMysql();
 
