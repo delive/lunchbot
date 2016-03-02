@@ -162,9 +162,11 @@ slack = new Slack(token, autoReconnect, autoMark);
 
 var j = schedule.scheduleJob('0 * * * *', function(){
 	var timeLeft = 31 - new Date().getDate();
-  	slack.send(	text: 'only  ' + timeLeft + ' days until tesla preorder!',
-	channel: 'what-is-lunch',
-	username: 'lunchbot'
+  	slack.send({	
+  		text: 'only  ' + timeLeft + ' days until tesla preorder!',
+		channel: 'what-is-lunch',
+		username: 'lunchbot'
+	});
 });
 
 // con = connectMysql();
